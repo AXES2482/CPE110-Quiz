@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-110 Computer Architecture Practice Simulator</title>
+  
+  <!-- Tailwind CSS CDN for modern rapid styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts for sleek developer-centric typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    /* Custom thin scrollbar styling for clean layouts */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen transition-colors duration-200">
+
+  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-4 px-6 flex justify-between items-center transition-colors">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold shadow-md shadow-indigo-600/20">
+        110
+      </div>
+      <div>
+        <h1 class="font-bold text-lg leading-none">CS-110 Final Prep</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syllabus Practice Environment</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <!-- Reference File Badge -->
+      <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-semibold text-xs">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"></path></svg>
+        <span>110-FINAL-EXAM.pdf Verbatim</span>
+      </span>
+
+      <!-- Dark/Light Theme Toggle -->
+      <button onclick="toggleDarkMode()" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition" aria-label="Toggle Theme">
+        <svg id="theme-toggle-dark" class="hidden w-5 h-5 text-slate-700 dark:text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light" class="hidden w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464l-.707-.707a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414zm2.12 10.607a1 1 0 010-1.414l.706-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1z" clip-rule="evenodd"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Setup Options Container -->
+  <main id="setup-view" class="max-w-4xl mx-auto px-6 py-12">
+    <!-- Active PDF Banner -->
+    <div class="mb-8 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+      <div class="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-medium">
+        <svg class="w-5 h-5 flex-shrink-0 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"></path></svg>
+        <span>Reference document loaded: <strong>110-FINAL-EXAM.pdf</strong> (100% Course Verified)</span>
+      </div>
+      <span class="text-xs bg-indigo-200 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2.5 py-1 rounded-md font-semibold">50 Questions Mapped</span>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-xl transition-all">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">Complete Syllabus Practice Deck</span>
+        <h2 class="text-3xl font-extrabold tracking-tight mt-4 text-slate-900 dark:text-white">Computer Architecture Simulator</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">Test your understanding across 50 highly aligned questions mapped with absolute fidelity to your exam parameters.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+        <!-- Mode Selectors -->
+        <div class="space-y-4">
+          <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            Choose Study Mode
+          </h3>
+          
+          <label class="block relative group cursor-pointer">
+            <input type="radio" name="studyMode" value="study" checked class="sr-only peer">
+            <div class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-indigo-600 peer-checked:bg-indigo-50/20 dark:peer-checked:border-indigo-500 dark:peer-checked:bg-indigo-950/20 transition-all duration-150">
+              <div class="font-bold text-slate-900 dark:text-white">Practice Mode</div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Provides immediate answer correction and reference learning explanations. Excellent for self-guided study.</p>
+            </div>
+          </label>
+
+          <label class="block relative group cursor-pointer">
+            <input type="radio" name="studyMode" value="exam" class="sr-only peer">
+            <div class="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 peer-checked:border-indigo-600 peer-checked:bg-indigo-50/20 dark:peer-checked:border-indigo-500 dark:peer-checked:bg-indigo-950/20 transition-all duration-150">
+              <div class="font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                <span>Exam Simulation Mode</span>
+                <span class="text-xs bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded-md font-medium">Timed</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Hides corrections and explanations until final assessment. Generates a robust diagnostics scorecard.</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Layout and Content Tuning -->
+        <div class="space-y-6">
+          <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            Session Adjustments
+          </h3>
+          
+          <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <label for="shuffleToggle" class="font-semibold text-sm text-slate-900 dark:text-white">Shuffle Question Order</label>
+                <div class="text-xs text-slate-500">Randomizes the sequence of questions to prevent layout recall.</div>
+              </div>
+              <input type="checkbox" id="shuffleToggle" checked class="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700">
+            </div>
+
+            <div class="border-t border-slate-200 dark:border-slate-800 pt-4 flex items-center justify-between">
+              <div>
+                <label for="categoryFilter" class="font-semibold text-sm text-slate-900 dark:text-white">Focus Category</label>
+                <div class="text-xs text-slate-500">Select a specific sub-topic or review the entire syllabus.</div>
+              </div>
+              <select id="categoryFilter" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all">Complete Exam (50 Questions)</option>
+                <option value="CPU Architecture">CPU Architecture</option>
+                <option value="Memory Systems">Memory Systems</option>
+                <option value="Digital & Logic Levels">Digital & Logic Levels</option>
+                <option value="System Communications">System Communications</option>
+                <option value="Number Systems">Number Systems</option>
+                <option value="System History & Performance">System History & Performance</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <button onclick="startQuiz()" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/40 transform active:scale-[0.98] transition-all flex items-center gap-3 text-lg">
+          Launch Practice Environment
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Live Quiz Application View -->
+  <main id="quiz-view" class="hidden max-w-7xl mx-auto px-4 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Active Question Workspace -->
+    <div class="lg:col-span-8 flex flex-col space-y-6">
+      
+      <!-- Live Progress & Tracker Banner -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-md flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-4">
+          <div class="relative w-12 h-12 flex items-center justify-center">
+            <!-- Circular Progress -->
+            <svg class="w-full h-full transform -rotate-90">
+              <circle cx="24" cy="24" r="20" class="stroke-slate-200 dark:stroke-slate-700" stroke-width="4" fill="transparent"/>
+              <circle id="progress-circle" cx="24" cy="24" r="20" class="stroke-indigo-600 dark:stroke-indigo-500 transition-all duration-300" stroke-width="4" fill="transparent" stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+            </svg>
+            <span id="progress-text" class="absolute text-xs font-bold text-slate-700 dark:text-slate-300">0%</span>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Exam Progress</div>
+            <div class="font-bold text-sm text-slate-700 dark:text-slate-200"><span id="curr-q-idx">1</span> of <span id="total-q-count">50</span> Questions Answered</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <!-- Timers -->
+          <div class="text-right">
+            <div id="timer-title" class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Elapsed Time</div>
+            <div id="timer-value" class="font-mono font-bold text-lg text-slate-700 dark:text-slate-100">00:00</div>
+          </div>
+          
+          <button onclick="flagQuestion()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-amber-950/20 hover:border-amber-400 text-slate-500 hover:text-amber-500 transition-all flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-19a1 1 0 011-1h13a1 1 0 01.8 1.6L15 6l2.8 3.4a1 1 0 01-.8 1.6H5v10H3z"></path></svg>
+            <span class="text-xs font-semibold hidden sm:inline">Flag</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Question Card Layout -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6">
+        <!-- Question Badge Header -->
+        <div class="flex items-center justify-between">
+          <span id="question-category" class="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Category Tag</span>
+          <span id="question-flagged-indicator" class="hidden text-xs bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M4 2v20h-2v-20h2zm14 4.1l-2.8 3.4 2.8 3.4h-13v-6.8h13zm2-2.1h-17v11h17l-4.5-5.5 4.5-5.5z"/></svg>
+            FLAGGED FOR REVIEW
+          </span>
+        </div>
+
+        <!-- Question Title -->
+        <div class="space-y-2">
+          <div class="text-xs font-semibold text-indigo-500 uppercase tracking-widest">Original Exam Q<span id="orig-q-idx">--</span></div>
+          <h3 id="question-text" class="text-lg md:text-xl font-bold leading-snug text-slate-950 dark:text-slate-100">Loading Question...</h3>
+        </div>
+
+        <!-- Multiple Choice Options -->
+        <div id="options-container" class="space-y-3.5 pt-2">
+          <!-- Dynamic rendering of option cards -->
+        </div>
+
+        <!-- Immediate Explanation Panel (Shown in Study mode after selection) -->
+        <div id="explanation-panel" class="hidden space-y-4">
+          <div class="bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-5 space-y-2">
+            <div class="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-bold text-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Explanation & Reference Core
+            </div>
+            <p id="explanation-text" class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Explanation content...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Navigation Toolbar -->
+      <div class="flex items-center justify-between gap-4">
+        <button onclick="navigateQuestion(-1)" class="px-6 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition flex items-center gap-2 shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          Previous
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button id="end-exam-btn" onclick="submitExamPrompt()" class="px-6 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md shadow-rose-600/10 transition">
+            Submit Assessment
+          </button>
+          
+          <button id="next-btn" onclick="navigateQuestion(1)" class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-md shadow-indigo-600/15 transition flex items-center gap-2">
+            Next
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Status & Tracking Palette (Right Side) -->
+    <div class="lg:col-span-4 flex flex-col space-y-6">
+      
+      <!-- Palette Panel -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div>
+            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white">Question Navigator</h4>
+            <p class="text-xs text-slate-500">Fast-travel or review flagged items</p>
+          </div>
+          <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-md font-bold tracking-tight" id="badge-answered">0 / 0</span>
+        </div>
+
+        <!-- Palette Key -->
+        <div class="grid grid-cols-3 gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-600"></span>Current</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-100 dark:bg-emerald-950/50 border border-emerald-500"></span>Answered</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-400"></span>Flagged</div>
+        </div>
+
+        <!-- Palette Grid -->
+        <div id="palette-grid" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2 max-h-[300px] overflow-y-auto pr-1">
+          <!-- Dynamic grid items -->
+        </div>
+
+        <!-- Restart Button -->
+        <button onclick="confirmReset()" class="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-bold hover:text-rose-600 hover:border-rose-300 dark:hover:border-rose-900/50 hover:bg-rose-50/50 dark:hover:bg-rose-950/10 rounded-2xl transition text-xs flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19.5"></path></svg>
+          Restart Session
+        </button>
+      </div>
+
+      <!-- Quick Session Information Card -->
+      <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-6 border border-indigo-950 shadow-xl space-y-4">
+        <h4 class="font-extrabold text-sm uppercase tracking-widest text-indigo-400">Active Settings</h4>
+        <ul class="text-xs space-y-3 font-medium text-slate-300">
+          <li class="flex justify-between">
+            <span class="text-slate-400">Assessment Mode:</span>
+            <span id="active-mode-label" class="text-white font-bold">Practice Mode</span>
+          </li>
+          <li class="flex justify-between">
+            <span class="text-slate-400">Filtered Target:</span>
+            <span id="active-category-label" class="text-white font-bold">All</span>
+          </li>
+          <li class="flex justify-between">
+            <span class="text-slate-400">Shuffled Sequence:</span>
+            <span id="active-shuffle-label" class="text-white font-bold">Enabled</span>
+          </li>
+          <li class="flex justify-between border-t border-indigo-900/60 pt-2">
+            <span class="text-slate-400">Syllabus Deck:</span>
+            <span class="text-white font-bold text-[10px]">110-FINAL-EXAM.pdf</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Complete Performance Report View -->
+  <main id="result-view" class="hidden max-w-5xl mx-auto px-6 py-12">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-xl space-y-10 transition-all">
+      
+      <!-- Scorecard Header Card -->
+      <div class="text-center space-y-4 max-w-2xl mx-auto">
+        <span class="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400">Assessment Complete</span>
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white mt-2">Your Performance Report</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Detailed overview of core subject matters, strengths, and targeted improvement plans.</p>
+      </div>
+
+      <!-- Score Ring and High Level Data -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-slate-50 dark:bg-slate-900/50 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800">
+        <!-- Circular Score indicator -->
+        <div class="flex flex-col items-center justify-center space-y-2">
+          <div class="relative w-40 h-40 flex items-center justify-center">
+            <svg class="w-full h-full transform -rotate-90">
+              <circle cx="80" cy="80" r="70" class="stroke-slate-200 dark:stroke-slate-700" stroke-width="8" fill="transparent"/>
+              <circle id="score-circle" cx="80" cy="80" r="70" class="stroke-emerald-500 transition-all duration-1000" stroke-width="8" fill="transparent" stroke-dasharray="439.8" stroke-dashoffset="439.8"/>
+            </svg>
+            <div class="absolute text-center">
+              <span id="score-percentage" class="text-3xl font-extrabold text-slate-950 dark:text-white">0%</span>
+              <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Total Accuracy</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- High-level numbers -->
+        <div class="grid grid-cols-2 gap-4 md:col-span-2">
+          <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Correct Answers</div>
+            <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1"><span id="report-correct">0</span> / <span id="report-total">50</span></div>
+          </div>
+          <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Time Taken</div>
+            <div id="report-time" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">00:00</div>
+          </div>
+          <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Overall Grade</div>
+            <div id="report-grade" class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">Grade</div>
+          </div>
+          <div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Flagged Reviewed</div>
+            <div id="report-flagged" class="text-2xl font-extrabold text-amber-500 mt-1">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject Area Analytics -->
+      <div class="space-y-4">
+        <h3 class="font-extrabold text-slate-900 dark:text-white text-lg">Subject Proficiency Map</h3>
+        <div id="category-bars" class="space-y-4">
+          <!-- Dynamic score bars rendered here -->
+        </div>
+      </div>
+
+      <!-- Detailed Question-by-Question Review Panel -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <h3 class="font-extrabold text-slate-900 dark:text-white text-lg">Question-by-Question Review</h3>
+          <div class="flex items-center gap-2">
+            <button onclick="filterReview('all')" id="filter-all" class="px-3.5 py-1.5 text-xs font-bold bg-indigo-600 text-white rounded-lg transition">All Items</button>
+            <button onclick="filterReview('wrong')" id="filter-wrong" class="px-3.5 py-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-rose-50 hover:text-rose-600 transition">Incorrect (<span id="count-wrong">0</span>)</button>
+            <button onclick="filterReview('flagged')" id="filter-flagged" class="px-3.5 py-1.5 text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-amber-50 hover:text-amber-600 transition">Flagged (<span id="count-flagged">0</span>)</button>
+          </div>
+        </div>
+
+        <div id="review-list" class="space-y-4">
+          <!-- Dynamic review items generated here -->
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="flex items-center justify-center gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button onclick="restartQuizWithSettings()" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg transition">
+          Retake with Same Settings
+        </button>
+        <button onclick="resetToDashboard()" class="px-8 py-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+          Configure New Session
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Overlay Modal for Confirms / Exit -->
+  <div id="custom-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <h4 id="modal-title" class="text-xl font-bold text-slate-950 dark:text-white">Are you sure?</h4>
+        <p id="modal-desc" class="text-sm text-slate-500 dark:text-slate-400">This action will erase your current practice progress.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="modal-cancel-btn" class="flex-1 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition text-sm">Cancel</button>
+        <button id="modal-confirm-btn" class="flex-1 py-3 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 transition text-sm">Confirm Action</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Full 50 Question database categorized accurately
+    // Mapped with absolute precision to match every highlighted choice in 110-FINAL-EXAM.pdf and handwritten keys
+    const questionsDatabase = [
+      {
+        id: 1,
+        originalNumber: 1,
+        category: "Digital & Logic Levels",
+        question: "This property of a system merely names components and defines their interconnection within the system.",
+        options: [
+          "A. behavioral description",
+          "B. structural description",
+          "C. network connection",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "In John P. Hayes textbook and PDF Page 1, the structural description of a system is defined as one that merely names components and defines their interconnections."
+      },
+      {
+        id: 2,
+        originalNumber: 2,
+        category: "Digital & Logic Levels",
+        question: "This consists of a set of registers linked by combinational data transfer and data processing circuits",
+        options: [
+          "A. combinational circuit",
+          "B. sequential circuit",
+          "C. field array",
+          "D. register-level system"
+        ],
+        correctAnswer: "D",
+        explanation: "As highlighted on Page 1, a register-level system is characterized by a set of registers linked by combinational data transfer and processing circuits."
+      },
+      {
+        id: 3,
+        originalNumber: 3,
+        category: "Memory Systems",
+        question: "The process of reading stored information from a ROM.",
+        options: [
+          "A. read operation",
+          "B. write operation",
+          "C. look-aside buffer",
+          "D. none of these"
+        ],
+        correctAnswer: "A",
+        explanation: "Retrieving stored information from Read-Only Memory (ROM) is termed a read operation (Page 1)."
+      },
+      {
+        id: 4,
+        originalNumber: 4,
+        category: "Digital & Logic Levels",
+        question: "A sequential circuit designed to cycle through a predetermined sequence of distinct states",
+        options: [
+          "A. comparator",
+          "B. converter",
+          "C. counter",
+          "D. none of these"
+        ],
+        correctAnswer: "C",
+        explanation: "A counter is a fundamental sequential circuit designed to traverse a set sequence of states upon receipt of a clock signal (Page 1)."
+      },
+      {
+        id: 5,
+        originalNumber: 5,
+        category: "System History & Performance",
+        question: "This stored and processed numbers in true binary or base 2 form. To minimize hardware costs, data was processed serially, or bit by bit.",
+        options: [
+          "A. UNIVAC",
+          "B. EDVAC",
+          "C. ENIAC",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "The EDVAC (Electronic Discrete Variable Automatic Computer) implemented true binary representation and processed bits serially to optimize logic gate costs (Page 2)."
+      },
+      {
+        id: 6,
+        originalNumber: 6,
+        category: "Digital & Logic Levels",
+        question: "This is known as the converse problem of determining a system structure that exhibits a given behavior.",
+        options: [
+          "A. Behavioral",
+          "B. Structural",
+          "C. design problem",
+          "D. none of these"
+        ],
+        correctAnswer: "C",
+        explanation: "While analysis derives behavior from structure, the design problem is the converse challenge of producing a hardware structure to exhibit target behaviors (Page 2)."
+      },
+      {
+        id: 7,
+        originalNumber: 7,
+        category: "Digital & Logic Levels",
+        question: "This is also known as the mapping of 2^n combinations of n binary variables onto the output values 0 and 1.",
+        options: [
+          "A. Direct mapping",
+          "B. Associative mapping",
+          "C. Memory mapping",
+          "D. None of these"
+        ],
+        correctAnswer: "A",
+        explanation: "According to the highlighted answer in the exam PDF (Question 7, Page 2), this is referred to as Direct mapping."
+      },
+      {
+        id: 8,
+        originalNumber: 8,
+        category: "Digital & Logic Levels",
+        question: "A circuit intended to generate the address or index of an active input line.",
+        options: [
+          "A. encoder",
+          "B. decoder",
+          "C. demultiplexer",
+          "D. None of these"
+        ],
+        correctAnswer: "A",
+        explanation: "An encoder takes multiple inputs and outputs a binary code corresponding to the index of whichever line is active (Page 2)."
+      },
+      {
+        id: 9,
+        originalNumber: 9,
+        category: "System History & Performance",
+        question: "A set of actual programs that are representative of a particular computing environment that can be used for performance evaluation.",
+        options: [
+          "A. Operating system",
+          "B. Kernel",
+          "C. application program",
+          "D. benchmarks"
+        ],
+        correctAnswer: "D",
+        explanation: "Benchmarks represent standardized suites of target programs run on different architectures to compare realistic system performance (Page 3)."
+      },
+      {
+        id: 10,
+        originalNumber: 10,
+        category: "Digital & Logic Levels",
+        question: "A device intended to route data from one of several sources to a common destination.",
+        options: [
+          "A. decoder",
+          "B. multiplexer",
+          "C. bus",
+          "D. converter"
+        ],
+        correctAnswer: "B",
+        explanation: "A multiplexer acts as a data selector switch that channels one of several independent signals onto a single shared pipeline (Page 3)."
+      },
+      {
+        id: 11,
+        originalNumber: 11,
+        category: "System Communications",
+        question: "This is the primary function of I/O devices which converts information from one physical representation to another.",
+        options: [
+          "A. interpreter",
+          "B. Operating System",
+          "C. data transducer",
+          "D. none of these"
+        ],
+        correctAnswer: "C",
+        explanation: "I/O devices are transducers because they convert between human physical states (keyboards, monitors) and CPU electrical digital binary states (Page 3)."
+      },
+      {
+        id: 12,
+        originalNumber: 12,
+        category: "System Communications",
+        question: "Processor-level components communicate by word-oriented buses. In systems with many components, communication may be controlled by a subsystem called an interconnection network; terms such as:",
+        options: [
+          "A. Switching network",
+          "B. Communication controller",
+          "C. Bus controller",
+          "D. All of these"
+        ],
+        correctAnswer: "D",
+        explanation: "Terms such as switching network, communication controller, and bus controller are all used interchangeably in architectural models to describe the interconnection network subsystem."
+      },
+      {
+        id: 13,
+        originalNumber: 13,
+        category: "Digital & Logic Levels",
+        question: "This employs logic gates as components and has a well-developed theory based on Boolean algebra.",
+        options: [
+          "A. gate level",
+          "B. register level",
+          "C. processor level",
+          "D. none of these"
+        ],
+        correctAnswer: "A",
+        explanation: "The gate level represents circuits using Boolean gates (AND, OR, NOT) as fundamental primitives mapped directly to Boolean algebra (Page 4)."
+      },
+      {
+        id: 14,
+        originalNumber: 14,
+        category: "CPU Architecture",
+        question: "This manages various routine aspects of the computer system on behalf of its users; it is typically part of the computer's operating system.",
+        options: [
+          "A. supervisor program",
+          "B. user program",
+          "C. main memory unit",
+          "D. none of these"
+        ],
+        correctAnswer: "A",
+        explanation: "The supervisor program (operating system kernel) regulates access, tracks directories, and handles low-level resource sharing for user tasks (Page 4)."
+      },
+      {
+        id: 15,
+        originalNumber: 15,
+        category: "CPU Architecture",
+        question: "It is generally useful to design a CPU so that it can receive requests for supervisor services directly from secondary memory units and other I/O devices. Such a request is called an:",
+        options: [
+          "A. Direct memory access",
+          "B. interrupt",
+          "C. fault request",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "An interrupt signal temporarily suspends execution of the primary user loop to transition control directly to a privileged OS service routine (Page 4)."
+      },
+      {
+        id: 16,
+        originalNumber: 16,
+        category: "CPU Architecture",
+        question: "The CPU organization proposed by von Neumann and his colleagues for the IAS computer is the basis for most subsequent designs. In many early designs, one of these CPU registers played a central role, being used to store an input or output operand in the execution of many instructions.",
+        options: [
+          "A. ALU",
+          "B. data register",
+          "C. address register",
+          "D. accumulator"
+        ],
+        correctAnswer: "D",
+        explanation: "The accumulator (AC) was the central register of early computers. It implicitly held mathematical operands and accumulated final computation results (Page 4)."
+      },
+      {
+        id: 17,
+        originalNumber: 17,
+        category: "CPU Architecture",
+        question: "Stack memory is intended for saving key information about an interrupted program via push operations so that the saved information can be retrieved later via pop operations. What CPU address register automatically keeps track of the stack's entry point?",
+        options: [
+          "A. Program counter",
+          "B. Stack pointer",
+          "C. Age counter",
+          "D. Top of the stack"
+        ],
+        correctAnswer: "B",
+        explanation: "The Stack Pointer (SP) is the dedicated hardware register inside the CPU that monitors the address of the most recently pushed stack frame (Page 5)."
+      },
+      {
+        id: 18,
+        originalNumber: 18,
+        category: "CPU Architecture",
+        question: "For the Burroughs B6500/7500 series tag-based architecture, if the word interpretation is 'Uninitialized operand', what will be its 3-bit tag?",
+        options: [
+          "A. 001",
+          "B. 110",
+          "C. 111",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "In Burroughs tag allocations, Tag 6 (binary 110) corresponds specifically to an Uninitialized Operand to trap uninitialized software variable usage (Page 5)."
+      },
+      {
+        id: 19,
+        originalNumber: 19,
+        category: "CPU Architecture",
+        question: "For the Burroughs B6500/7500 series tag-based architecture, if the word interpretation is 'Single-precision number', what will be its 3-bit tag?",
+        options: [
+          "A. 001",
+          "B. 110",
+          "C. 111",
+          "D. None of these"
+        ],
+        correctAnswer: "D",
+        explanation: "A single-precision numeric word in Burroughs uses Tag 0 (binary 000). Since 000 is not listed in the options, the highlighted answer is D. None of these (Page 5)."
+      },
+      {
+        id: 20,
+        originalNumber: 20,
+        category: "CPU Architecture",
+        question: "For the Burroughs B6500/7500 series tag-based architecture, if the word interpretation is 'Segment Descriptor', what will be its 3-bit tag?",
+        options: [
+          "A. 011",
+          "B. 110",
+          "C. 010",
+          "D. None of these"
+        ],
+        correctAnswer: "A",
+        explanation: "According to the handwritten interpretation key for Burroughs architecture, the 3-bit tag for a Segment Descriptor is 011."
+      },
+      {
+        id: 21,
+        originalNumber: 21,
+        category: "CPU Architecture",
+        question: "For the Burroughs B6500/7500 series tag-based architecture, if the word interpretation is 'Indirect reference word', what will be its 3-bit tag?",
+        options: [
+          "A. 100",
+          "B. 011",
+          "C. 001",
+          "D. none of these"
+        ],
+        correctAnswer: "C",
+        explanation: "Indirect reference words pointing to other registers or stack frames in Burroughs architecture are identified specifically by Tag 1 (binary 001) (Page 6)."
+      },
+      {
+        id: 22,
+        originalNumber: 22,
+        category: "CPU Architecture",
+        question: "For the Burroughs B6500/7500 series tag-based architecture, if the word interpretation is 'Instruction' (program code word), what will be its 3-bit tag?",
+        options: [
+          "A. 001",
+          "B. 111",
+          "C. 101",
+          "D. None of these"
+        ],
+        correctAnswer: "B",
+        explanation: "According to the handwritten interpretation key for Burroughs architecture, the 3-bit tag for an Instruction is 111."
+      },
+      {
+        id: 23,
+        originalNumber: 23,
+        category: "System History & Performance",
+        question: "In selecting a number representation to be used in a computer, which factor/s should be taken into account?",
+        options: [
+          "A. The range of values (number magnitudes) likely to be encountered.",
+          "B. The precision of numbers, which refers to the maximum accuracy of the representation.",
+          "C. The cost of the hardware required to store and process the numbers.",
+          "D. All of them"
+        ],
+        correctAnswer: "D",
+        explanation: "Selecting a representation format is an engineering trade-off among value range, numerical precision, and target logic gate cost (Page 6)."
+      },
+      {
+        id: 24,
+        originalNumber: 24,
+        category: "Number Systems",
+        question: "Several number codes exist that facilitate rapid number conversion by encoding each decimal digit separately by a sequence of bits. Codes of this kind are called decimal codes. The most widely used decimal code is?",
+        options: [
+          "A. Binary-coded decimal",
+          "B. ASCII code",
+          "C. Two out of five code",
+          "D. Excess three code"
+        ],
+        correctAnswer: "A",
+        explanation: "Binary-Coded Decimal (BCD) is the most popular decimal code, mapping each separate base-10 digit directly to a 4-bit binary nibble (Page 6)."
+      },
+      {
+        id: 25,
+        originalNumber: 25,
+        category: "Number Systems",
+        question: "The advantage of this number code is that it may be processed using the same logic used for binary codes. If two numbers of this coding system are added like binary numbers, the required decimal carry is automatically generated from the high order bits.",
+        options: [
+          "A. Binary-coded decimal",
+          "B. ASCII code",
+          "C. Two out of five code",
+          "D. Excess three code"
+        ],
+        correctAnswer: "D",
+        explanation: "Excess-3 (XS-3) addition naturally produces a binary carry bit across the MSB boundary when the decimal sum is equal to or greater than 10 (Page 7)."
+      },
+      {
+        id: 26,
+        originalNumber: 26,
+        category: "Number Systems",
+        question: "Consider the common case where the mantissa is a sign-magnitude fraction and a base of r is used. The mantissa is said to be normalized if the digit to the right of the radix point is:",
+        options: [
+          "A. Zero",
+          "B. Negative",
+          "C. Not zero",
+          "D. None of these"
+        ],
+        correctAnswer: "C",
+        explanation: "A floating-point representation is normalized when the most significant digit of the mantissa fraction (immediately adjacent to the radix point) is non-zero (Page 7)."
+      },
+      {
+        id: 27,
+        originalNumber: 27,
+        category: "Number Systems",
+        question: "Floating-point numbers are usually normalized, meaning that the magnitude field should contain no insignificant leading bits. Hence the magnitude part of a normalized sign-magnitude number always has what as its most significant digit?",
+        options: [
+          "A. 0",
+          "B. 1",
+          "C. -1",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "In binary floating-point systems (indicated by the word 'bits' in the question), a normalized non-zero mantissa MUST start with a leading digit of 1."
+      },
+      {
+        id: 28,
+        originalNumber: 28,
+        category: "CPU Architecture",
+        question: "The ability to use all addressing modes in a uniform and consistent way with all opcodes of an instruction set or assembly language is a desirable feature termed:",
+        options: [
+          "A. Orthogonality",
+          "B. Direct",
+          "C. Immediate",
+          "D. Relative"
+        ],
+        correctAnswer: "A",
+        explanation: "Orthogonality dictates that instruction operators and addressing modes can be chosen independently and symmetrically of one another (Page 7)."
+      },
+      {
+        id: 29,
+        originalNumber: 29,
+        category: "CPU Architecture",
+        question: "This type of addressing is conceptually the simplest mode of direct address formation and requires the complete operand address to appear in the instruction operand field. This address is used without modification to access the desired data item.",
+        options: [
+          "A. Relative",
+          "B. Absolute",
+          "C. Symbolic",
+          "D. Associative"
+        ],
+        correctAnswer: "B",
+        explanation: "Absolute (direct) addressing embeds the complete physical memory coordinate directly inside the instruction so it can be queried immediately without calculating indexes (Page 8)."
+      },
+      {
+        id: 30,
+        originalNumber: 30,
+        category: "CPU Architecture",
+        question: "Which among these is not a major attribute of RISC?",
+        options: [
+          "A. Relatively few instruction types and addressing modes.",
+          "B. Fixed and easily decoded instruction formats.",
+          "C. Microprogrammed rather than hardwired control.",
+          "D. Memory access is limited mainly to load and store instructions."
+        ],
+        correctAnswer: "C",
+        explanation: "RISC computers favor hardwired control logic over slow microprogramming to execute simple instructions rapidly in a single clock cycle (Page 8)."
+      },
+      {
+        id: 31,
+        originalNumber: 31,
+        category: "CPU Architecture",
+        question: "Modern CPUs retain some registers like the ones for multiplication and division, but the accumulator AC and the data register DR are usually replaced by a set of registers known as a:",
+        options: [
+          "A. Data buffer register",
+          "B. Instruction register",
+          "C. Register file",
+          "D. Multiply/quotient"
+        ],
+        correctAnswer: "C",
+        explanation: "A register file is a small, fast set of multi-port general-purpose registers that replaces the singular, outdated accumulator design (Page 8)."
+      },
+      {
+        id: 32,
+        originalNumber: 32,
+        category: "CPU Architecture",
+        question: "A pipeline processor consists of a sequence of m data processing circuits that collectively perform a single operation on a stream of data operands passing through them.",
+        options: [
+          "A. Stages",
+          "B. Pages",
+          "C. Frames",
+          "D. None of these"
+        ],
+        correctAnswer: "A",
+        explanation: "Pipelines are broken into separate sequential sub-components called 'stages' (or segments), processing instructions like a factory assembly line (Page 8)."
+      },
+      {
+        id: 33,
+        originalNumber: 33,
+        category: "CPU Architecture",
+        question: "In a microprogrammed CPU, each machine instruction is executed by a microprogram that acts as a real time interpreter for the instruction. The set of microprograms that interpret a particular instruction set or machine language L is called:",
+        options: [
+          "A. Simulator for L",
+          "B. Emulator for L",
+          "C. Accelerator for L",
+          "D. None of these"
+        ],
+        correctAnswer: "B",
+        explanation: "An emulator interprets machine instructions of language L by translating them on-the-fly into lower-level CPU hardware microprograms (Page 9)."
+      },
+      {
+        id: 34,
+        originalNumber: 34,
+        category: "CPU Architecture",
+        question: "This is similar to assembly language and is used to write microprograms called micro-assembly language.",
+        options: [
+          "A. Symbolic language",
+          "B. Machine language",
+          "C. High level language",
+          "D. Low level language"
+        ],
+        correctAnswer: "A",
+        explanation: "A symbolic language (microcode assembly) provides human-readable mnemonics for raw, binary-level system control fields (Page 9)."
+      },
+      {
+        id: 35,
+        originalNumber: 35,
+        category: "CPU Architecture",
+        question: "This is necessary to translate microprograms into executable programs that can be stored in the control memory.",
+        options: [
+          "A. Microprogram",
+          "B. Micro assembler",
+          "C. Micro storage",
+          "D. None of these"
+        ],
+        correctAnswer: "B",
+        explanation: "A micro assembler translates mnemonics from microprograms into executable binaries written into the control store ROM (Page 9)."
+      },
+      {
+        id: 36,
+        originalNumber: 36,
+        category: "CPU Architecture",
+        question: "In its simplest form, a microinstruction has parts:",
+        options: [
+          "A. a set of control fields and a data field",
+          "B. a set of control fields and an address field",
+          "C. a set of data fields and an address field",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "A basic microinstruction has a control field (setting datapath switch lines) and an address field (pointing to the next micro-address) (Page 9)."
+      },
+      {
+        id: 37,
+        originalNumber: 37,
+        category: "CPU Architecture",
+        question: "Horizontal microinstructions have the following general attribute/s:",
+        options: [
+          "A. short formats.",
+          "B. ability to express a high degree of parallelism.",
+          "C. considerable encoding of the control information.",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "Horizontal microcode contains little to no line encoding, allowing independent fields to control multiple system areas in parallel (Page 10)."
+      },
+      {
+        id: 38,
+        originalNumber: 38,
+        category: "CPU Architecture",
+        question: "A pipeline's performance can be measured by this in terms of millions of instructions executed per second or MIPS.",
+        options: [
+          "A. output",
+          "B. data transfer rate",
+          "C. efficiency",
+          "D. throughput"
+        ],
+        correctAnswer: "D",
+        explanation: "Throughput measures the total volume of work completed per unit time, often expressed as MIPS or Instructions Per Cycle (IPC) (Page 10)."
+      },
+      {
+        id: 39,
+        originalNumber: 39,
+        category: "Memory Systems",
+        question: "Memory devices such as magnetic hard disks and CDROMs contain many rotating storage tracks. If each track has its own read-write head, the tracks can be accessed randomly, but access within each track is serial. In such cases the access mode is:",
+        options: [
+          "A. random",
+          "B. Serial",
+          "C. semiserial",
+          "D. Semirandom"
+        ],
+        correctAnswer: "D",
+        explanation: "Semirandom (or direct) access describes direct track indexing combined with serial scanning within a track (Page 10)."
+      },
+      {
+        id: 40,
+        originalNumber: 40,
+        category: "Memory Systems",
+        question: "Memories that require periodic refreshing are called:",
+        options: [
+          "A. dynamic memories",
+          "B. Static memories",
+          "C. flash memories",
+          "D. magnetic memories"
+        ],
+        correctAnswer: "A",
+        explanation: "Dynamic Random-Access Memory (DRAM) uses capacitors that bleed electronic charge, requiring a periodic refresh operation to preserve data (Page 10)."
+      },
+      {
+        id: 41,
+        originalNumber: 41,
+        category: "Memory Systems",
+        question: "The maximum amount of information that can be transferred to or from the memory per unit time is:",
+        options: [
+          "A. Output",
+          "B. Throughput",
+          "C. bandwidth",
+          "D. frequency"
+        ],
+        correctAnswer: "C",
+        explanation: "Bandwidth represents the physical limit of data transfer per second across a bus link (Page 11)."
+      },
+      {
+        id: 42,
+        originalNumber: 42,
+        category: "Memory Systems",
+        question: "Serial-access memories find their main application as secondary computer memories because of low cost per bit and relatively long access times. Low cost is achieved by using very simple and small storage cells. Long access time is due to which of the following?",
+        options: [
+          "A. The relatively high speed at which the tracks move.",
+          "B. The read-write head positioning time.",
+          "C. Data transfer to and from the memory is parallel rather than serial.",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "Based directly on the provided screenshot exam key, the correct answer for the cause of long access time in this context is B: the read-write head positioning time."
+      },
+      {
+        id: 43,
+        originalNumber: 43,
+        category: "Memory Systems",
+        question: "In principle, OPT can be implemented by making two passes through the executing program. The first is a simulation run to determine the sequence S_B of distinct virtual block addresses generated by the program; this sequence is called:",
+        options: [
+          "A. memory mapping",
+          "B. Cache data sequence",
+          "C. main memory address",
+          "D. block address trace"
+        ],
+        correctAnswer: "D",
+        explanation: "The complete sequence of virtual block addresses accessed by a program is captured in a sequential trace called a block address trace (Page 11)."
+      },
+      {
+        id: 44,
+        originalNumber: 44,
+        category: "Memory Systems",
+        question: "The collection of tag addresses currently assigned to the cache, which can be noncontiguous, is stored in a special memory called:",
+        options: [
+          "A. directory",
+          "B. Cache data memory",
+          "C. cache page frame",
+          "D. none of these"
+        ],
+        correctAnswer: "A",
+        explanation: "A cache directory (or tag memory) registers block metadata tags representing elements currently cached in memory slots (Page 12)."
+      },
+      {
+        id: 45,
+        originalNumber: 45,
+        category: "System Communications",
+        question: "Digital signals are transmitted over buses. As they travel, pulses are distorted by physical variations, cross-talk, and similar issues collectively known as:",
+        options: [
+          "A. glitch",
+          "B. Crosstalk",
+          "C. fault",
+          "D. noise"
+        ],
+        correctAnswer: "D",
+        explanation: "Noise represents the collection of external physical signals, crosstalk, and line distortions that affect digital signal integrity (Page 12)."
+      },
+      {
+        id: 46,
+        originalNumber: 46,
+        category: "System Communications",
+        question: "It is cost-effective to embed data in analog signals. These nonstop signals are generated and varied to produce distinct signal types that denote 0 and 1. This nonstop signal is a:",
+        options: [
+          "A. carrier",
+          "B. analog",
+          "C. digital",
+          "D. modulated"
+        ],
+        correctAnswer: "A",
+        explanation: "A carrier wave is an analog high-frequency wave modified (modulated) in amplitude or phase to transmit digital values (Page 12)."
+      },
+      {
+        id: 47,
+        originalNumber: 47,
+        category: "System Communications",
+        question: "A type of packet switching combining voice and data communication using short packets that can be transmitted very fast.",
+        options: [
+          "A. random transfer mode",
+          "B. synchronous transfer mode",
+          "C. asynchronous transfer mode",
+          "D. serial transfer mode"
+        ],
+        correctAnswer: "C",
+        explanation: "Asynchronous Transfer Mode (ATM) uses fixed-length 53-byte cells to achieve high transmission speeds for both voice and data (Page 13)."
+      },
+      {
+        id: 48,
+        originalNumber: 48,
+        category: "System Communications",
+        question: "A system's interconnection structure can be defined by a graph. A path designed to link only two devices is said to be:",
+        options: [
+          "A. homogeneous",
+          "B. dedicated",
+          "C. shared",
+          "D. none of these"
+        ],
+        correctAnswer: "B",
+        explanation: "A dedicated line connects exactly two system nodes (point-to-point connection), avoiding arbitration logic (Page 13)."
+      },
+      {
+        id: 49,
+        originalNumber: 49,
+        category: "System Communications",
+        question: "A path used to transfer information between different sets of devices at different times is said to be:",
+        options: [
+          "A. bus",
+          "B. Clocked",
+          "C. multiplexed",
+          "D. none of these"
+        ],
+        correctAnswer: "C",
+        explanation: "Multiplexed channels (lines or buses) share path resources between different devices over time or different frequencies (Page 13)."
+      },
+      {
+        id: 50,
+        originalNumber: 50,
+        category: "System Communications",
+        question: "Buses are distinguished by data transfer timing. In this type of bus, each item is transferred during a time slot (clock cycle) known to both units.",
+        options: [
+          "A. data",
+          "B. asynchronous",
+          "C. synchronous",
+          "D. control"
+        ],
+        correctAnswer: "C",
+        explanation: "Synchronous buses perform data transmission in sync with a shared clock line, using fixed, predictable cycle limits (Page 13)."
+      }
+    ];
+
+    // Core Session State Variables
+    let quizQuestions = [];
+    let currentQuestionIndex = 0;
+    let selectedAnswers = {}; // Map of question ID -> Selected Option ("A", "B", "C", "D")
+    let flaggedQuestions = {}; // Map of question ID -> boolean
+    let sessionSettings = {
+      mode: "study", // "study" or "exam"
+      category: "all",
+      shuffle: true
+    };
+    let timerInterval = null;
+    let startTime = null;
+    let secondsElapsed = 0;
+
+    // Run on startup
+    window.onload = function() {
+      initTheme();
+    };
+
+    function initTheme() {
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-toggle-light').classList.remove('hidden');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('theme-toggle-dark').classList.remove('hidden');
+      }
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      if (isDark) {
+        localStorage.theme = 'dark';
+        document.getElementById('theme-toggle-light').classList.remove('hidden');
+        document.getElementById('theme-toggle-dark').classList.add('hidden');
+      } else {
+        localStorage.theme = 'light';
+        document.getElementById('theme-toggle-dark').classList.remove('hidden');
+        document.getElementById('theme-toggle-light').classList.add('hidden');
+      }
+    }
+
+    // Launch practice environment based on choices
+    function startQuiz() {
+      // 1. Get configurations
+      const studyModeInput = document.querySelector('input[name="studyMode"]:checked');
+      sessionSettings.mode = studyModeInput ? studyModeInput.value : "study";
+      sessionSettings.shuffle = document.getElementById('shuffleToggle').checked;
+      sessionSettings.category = document.getElementById('categoryFilter').value;
+
+      // 2. Filter Questions by Category
+      if (sessionSettings.category === "all") {
+        quizQuestions = [...questionsDatabase];
+      } else {
+        quizQuestions = questionsDatabase.filter(q => q.category === sessionSettings.category);
+      }
+
+      // 3. Shuffle Questions if toggled
+      if (sessionSettings.shuffle) {
+        shuffleArray(quizQuestions);
+      } else {
+        // Sort by original index sequence
+        quizQuestions.sort((a, b) => a.id - b.id);
+      }
+
+      // Reset State variables
+      currentQuestionIndex = 0;
+      selectedAnswers = {};
+      flaggedQuestions = {};
+      secondsElapsed = 0;
+
+      // Render Active Views
+      document.getElementById('setup-view').classList.add('hidden');
+      document.getElementById('quiz-view').classList.remove('hidden');
+      document.getElementById('result-view').classList.add('hidden');
+
+      // Sync settings tags in UI
+      document.getElementById('active-mode-label').textContent = sessionSettings.mode === "study" ? "Practice Mode" : "Exam Mode";
+      document.getElementById('active-category-label').textContent = sessionSettings.category === "all" ? "Complete Exam" : sessionSettings.category;
+      document.getElementById('active-shuffle-label').textContent = sessionSettings.shuffle ? "Enabled" : "Disabled";
+      document.getElementById('timer-title').textContent = sessionSettings.mode === "study" ? "Elapsed Time" : "Exam Timer";
+
+      // Initialize Timer
+      startTimer();
+
+      // Display question
+      renderCurrentQuestion();
+      buildNavigationGrid();
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    // Timer Implementation
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      startTime = Date.now();
+      
+      timerInterval = setInterval(() => {
+        secondsElapsed = Math.floor((Date.now() - startTime) / 1000);
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+      document.getElementById('timer-value').textContent = `${mins}:${secs}`;
+    }
+
+    function formatTime(totalSeconds) {
+      const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    // Navigation and rendering mechanisms
+    function renderCurrentQuestion() {
+      if (quizQuestions.length === 0) return;
+      const q = quizQuestions[currentQuestionIndex];
+
+      // Update question headers
+      document.getElementById('question-category').textContent = q.category;
+      document.getElementById('orig-q-idx').textContent = q.originalNumber;
+      document.getElementById('curr-q-idx').textContent = currentQuestionIndex + 1;
+      document.getElementById('total-q-count').textContent = quizQuestions.length;
+      document.getElementById('question-text').textContent = q.question;
+
+      // Handle Flag indicator
+      const flagged = flaggedQuestions[q.id];
+      const flagIndicator = document.getElementById('question-flagged-indicator');
+      if (flagged) {
+        flagIndicator.classList.remove('hidden');
+      } else {
+        flagIndicator.classList.add('hidden');
+      }
+
+      // Options Rendering
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      const savedAnswer = selectedAnswers[q.id];
+
+      q.options.forEach((optStr) => {
+        const optLetter = optStr.trim().charAt(0); // "A", "B", "C", "D"
+        
+        const optionCard = document.createElement('button');
+        optionCard.className = `w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-3 transform active:scale-[0.99] focus:outline-none`;
+        
+        let cardStyles = `border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-750`;
+
+        // Check conditions if an answer is selected
+        if (savedAnswer) {
+          if (sessionSettings.mode === "study") {
+            // Highlight right and wrong selections immediately
+            if (optLetter === q.correctAnswer) {
+              cardStyles = `border-emerald-500 bg-emerald-50/20 text-emerald-800 dark:text-emerald-300 dark:bg-emerald-950/20`;
+            } else if (optLetter === savedAnswer) {
+              cardStyles = `border-rose-500 bg-rose-50/20 text-rose-800 dark:text-rose-300 dark:bg-rose-950/20`;
+            } else {
+              cardStyles = `border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 opacity-60`;
+            }
+          } else {
+            // Exam mode styling (just highlights chosen option)
+            if (optLetter === savedAnswer) {
+              cardStyles = `border-indigo-600 dark:border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 text-indigo-900 dark:text-indigo-200 font-semibold`;
+            }
+          }
+        }
+
+        optionCard.className += " " + cardStyles;
+        
+        // Disabled interaction in study mode if already answered
+        if (savedAnswer && sessionSettings.mode === "study") {
+          optionCard.disabled = true;
+        } else {
+          optionCard.onclick = () => selectOption(optLetter);
+        }
+
+        // Add option markup
+        optionCard.innerHTML = `
+          <div class="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs border ${
+            savedAnswer && optLetter === savedAnswer 
+              ? 'bg-indigo-600 text-white border-indigo-600' 
+              : 'border-slate-300 dark:border-slate-600 text-slate-500'
+          }">
+            ${optLetter}
+          </div>
+          <div class="text-xs sm:text-sm font-medium leading-normal">${optStr.substring(2)}</div>
+        `;
+        optionsContainer.appendChild(optionCard);
+      });
+
+      // Show/Hide Explanation Panel
+      const explanationPanel = document.getElementById('explanation-panel');
+      if (savedAnswer && sessionSettings.mode === "study") {
+        document.getElementById('explanation-text').textContent = q.explanation;
+        explanationPanel.classList.remove('hidden');
+      } else {
+        explanationPanel.classList.add('hidden');
+      }
+
+      // Sync Progress Circle & Text
+      updateProgressMetrics();
+      syncNavigationControls();
+    }
+
+    function selectOption(optLetter) {
+      const q = quizQuestions[currentQuestionIndex];
+      selectedAnswers[q.id] = optLetter;
+      
+      // Immediately refresh question layout to show validation or highlighting
+      renderCurrentQuestion();
+      buildNavigationGrid();
+    }
+
+    function flagQuestion() {
+      const q = quizQuestions[currentQuestionIndex];
+      flaggedQuestions[q.id] = !flaggedQuestions[q.id];
+      renderCurrentQuestion();
+      buildNavigationGrid();
+    }
+
+    function navigateQuestion(direction) {
+      const nextIndex = currentQuestionIndex + direction;
+      if (nextIndex >= 0 && nextIndex < quizQuestions.length) {
+        currentQuestionIndex = nextIndex;
+        renderCurrentQuestion();
+        buildNavigationGrid();
+      }
+    }
+
+    function syncNavigationControls() {
+      // Next button vs Submit button display
+      const nextBtn = document.getElementById('next-btn');
+      if (currentQuestionIndex === quizQuestions.length - 1) {
+        nextBtn.classList.add('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+      }
+    }
+
+    function updateProgressMetrics() {
+      const total = quizQuestions.length;
+      const answered = Object.keys(selectedAnswers).length;
+      const pct = total > 0 ? Math.round((answered / total) * 125.6) : 0;
+      
+      // Update SVG Ring offset
+      const circle = document.getElementById('progress-circle');
+      circle.style.strokeDashoffset = 125.6 - pct;
+      
+      // Sync Text indicators
+      document.getElementById('progress-text').textContent = `${Math.round((answered / total) * 100)}%`;
+      document.getElementById('badge-answered').textContent = `${answered} / ${total}`;
+    }
+
+    // Build the Right hand navigation grid
+    function buildNavigationGrid() {
+      const grid = document.getElementById('palette-grid');
+      grid.innerHTML = '';
+
+      quizQuestions.forEach((q, idx) => {
+        const item = document.createElement('button');
+        item.className = `h-10 text-xs font-bold rounded-xl flex items-center justify-center transition-all border transform active:scale-90`;
+        
+        const isCurrent = idx === currentQuestionIndex;
+        const isAnswered = selectedAnswers[q.id] !== undefined;
+        const isFlagged = flaggedQuestions[q.id];
+
+        let stateStyles = `border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500`;
+
+        if (isCurrent) {
+          stateStyles = `bg-indigo-600 border-indigo-600 text-white ring-2 ring-indigo-600/30 dark:ring-indigo-500/30`;
+        } else if (isFlagged) {
+          stateStyles = `bg-amber-400 border-amber-400 text-slate-900`;
+        } else if (isAnswered) {
+          stateStyles = `bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400`;
+        }
+
+        item.className += ' ' + stateStyles;
+        item.textContent = idx + 1;
+        item.onclick = () => {
+          currentQuestionIndex = idx;
+          renderCurrentQuestion();
+          buildNavigationGrid();
+        };
+
+        grid.appendChild(item);
+      });
+    }
+
+    // Action dialogs and Prompts
+    function showModal(title, desc, confirmCallback) {
+      const modal = document.getElementById('custom-modal');
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').textContent = desc;
+
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+
+      confirmBtn.onclick = () => {
+        confirmCallback();
+        modal.classList.add('hidden');
+      };
+
+      cancelBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+
+      modal.classList.remove('hidden');
+    }
+
+    function confirmReset() {
+      showModal(
+        "Restart Session?", 
+        "Are you sure you want to clear your current progress and restart?",
+        () => {
+          resetToDashboard();
+        }
+      );
+    }
+
+    function submitExamPrompt() {
+      const unansweredCount = quizQuestions.length - Object.keys(selectedAnswers).length;
+      let promptDesc = "This will compile your answers and generate a detailed diagnostic report card.";
+      if (unansweredCount > 0) {
+        promptDesc = `Warning: You have ${unansweredCount} unanswered question(s). Submitting now will count them as incorrect.`;
+      }
+
+      showModal(
+        "Submit Assessment?",
+        promptDesc,
+        () => {
+          evaluateAndShowResults();
+        }
+      );
+    }
+
+    // Result Evaluation Process
+    function evaluateAndShowResults() {
+      if (timerInterval) clearInterval(timerInterval);
+
+      // Hide core exam layouts
+      document.getElementById('quiz-view').classList.add('hidden');
+      document.getElementById('result-view').classList.remove('hidden');
+
+      // 1. Core Data Evaluation
+      let correctCount = 0;
+      let flaggedReviewCount = 0;
+      const categoriesMap = {}; // Tracks correctness per category
+
+      quizQuestions.forEach((q) => {
+        const userAns = selectedAnswers[q.id];
+        const isCorrect = userAns === q.correctAnswer;
+        
+        if (isCorrect) correctCount++;
+        if (flaggedQuestions[q.id]) flaggedReviewCount++;
+
+        // Track metrics across categories
+        if (!categoriesMap[q.category]) {
+          categoriesMap[q.category] = { total: 0, correct: 0 };
+        }
+        categoriesMap[q.category].total++;
+        if (isCorrect) categoriesMap[q.category].correct++;
+      });
+
+      const accuracyPct = Math.round((correctCount / quizQuestions.length) * 100);
+
+      // 2. Score Circle Animation
+      const scoreCircle = document.getElementById('score-circle');
+      // circumference of radius 70 is 439.8
+      const strokeOffset = 439.8 - (439.8 * accuracyPct / 100);
+      scoreCircle.style.strokeDashoffset = strokeOffset;
+      document.getElementById('score-percentage').textContent = `${accuracyPct}%`;
+
+      // 3. Stats Block Sync
+      document.getElementById('report-correct').textContent = correctCount;
+      document.getElementById('report-total').textContent = quizQuestions.length;
+      document.getElementById('report-time').textContent = formatTime(secondsElapsed);
+      document.getElementById('report-flagged').textContent = flaggedReviewCount;
+
+      // Classify overall grade scale
+      let finalGrade = "Needs Study";
+      let gradeColor = "text-rose-600 dark:text-rose-400";
+      if (accuracyPct >= 90) {
+        finalGrade = "Excellent";
+        gradeColor = "text-emerald-500";
+      } else if (accuracyPct >= 75) {
+        finalGrade = "Very Good";
+        gradeColor = "text-indigo-600 dark:text-indigo-400";
+      } else if (accuracyPct >= 60) {
+        finalGrade = "Passing";
+        gradeColor = "text-amber-500";
+      }
+      
+      const gradeText = document.getElementById('report-grade');
+      gradeText.textContent = finalGrade;
+      gradeText.className = `text-2xl font-extrabold mt-1 ${gradeColor}`;
+
+      // 4. Render category capability meters
+      const categoryBars = document.getElementById('category-bars');
+      categoryBars.innerHTML = '';
+
+      for (const cat in categoriesMap) {
+        const catData = categoriesMap[cat];
+        const catPct = Math.round((catData.correct / catData.total) * 100);
+        
+        let barColor = "bg-rose-500";
+        if (catPct >= 80) barColor = "bg-emerald-500";
+        else if (catPct >= 60) barColor = "bg-indigo-500";
+
+        const barCard = document.createElement('div');
+        barCard.className = `p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2`;
+        barCard.innerHTML = `
+          <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+            <span>${cat}</span>
+            <span>${catData.correct}/${catData.total} Correct (${catPct}%)</span>
+          </div>
+          <div class="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full rounded-full ${barColor} transition-all duration-1000" style="width: ${catPct}%"></div>
+          </div>
+        `;
+        categoryBars.appendChild(barCard);
+      }
+
+      // Prepare filters counting
+      let wrongCount = quizQuestions.length - correctCount;
+      document.getElementById('count-wrong').textContent = wrongCount;
+      document.getElementById('count-flagged').textContent = flaggedReviewCount;
+
+      // 5. Run full review lists
+      renderReviewList("all");
+    }
+
+    // Interactive Review Lists Filter
+    function renderReviewList(filterType) {
+      const reviewList = document.getElementById('review-list');
+      reviewList.innerHTML = '';
+
+      // Sync filter button styling classes
+      const allBtn = document.getElementById('filter-all');
+      const wrongBtn = document.getElementById('filter-wrong');
+      const flagBtn = document.getElementById('filter-flagged');
+
+      allBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700";
+      wrongBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700";
+      flagBtn.className = "px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700";
+
+      if (filterType === "all") allBtn.className = "px-3.5 py-1.5 text-xs font-bold bg-indigo-600 text-white rounded-lg transition";
+      if (filterType === "wrong") wrongBtn.className = "px-3.5 py-1.5 text-xs font-bold bg-rose-600 text-white rounded-lg transition";
+      if (filterType === "flagged") flagBtn.className = "px-3.5 py-1.5 text-xs font-bold bg-amber-500 text-slate-950 rounded-lg transition";
+
+      quizQuestions.forEach((q, idx) => {
+        const userAns = selectedAnswers[q.id];
+        const isCorrect = userAns === q.correctAnswer;
+        const isFlagged = flaggedQuestions[q.id];
+
+        // Filter constraints
+        if (filterType === "wrong" && isCorrect) return;
+        if (filterType === "flagged" && !isFlagged) return;
+
+        const card = document.createElement('div');
+        card.className = `p-6 rounded-2xl bg-white dark:bg-slate-800 border-l-4 shadow-sm space-y-4 ${
+          isCorrect ? 'border-l-emerald-500 border-slate-200 dark:border-slate-750' : 'border-l-rose-500 border-slate-200 dark:border-slate-750'
+        }`;
+
+        // Options breakdown markup
+        let optionsListStr = '';
+        q.options.forEach((opt) => {
+          const optLetter = opt.trim().charAt(0);
+          
+          let listStyles = 'text-slate-500 dark:text-slate-400';
+          let stateTag = '';
+
+          if (optLetter === q.correctAnswer) {
+            listStyles = 'text-emerald-700 dark:text-emerald-400 font-bold';
+            stateTag = `<span class="text-[10px] ml-2 px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">Correct Answer</span>`;
+          } else if (optLetter === userAns) {
+            listStyles = 'text-rose-600 dark:text-rose-400 font-bold';
+            stateTag = `<span class="text-[10px] ml-2 px-1.5 py-0.5 rounded bg-rose-50 dark:bg-rose-950/40 text-rose-500">Your Selection</span>`;
+          }
+
+          optionsListStr += `
+            <li class="flex items-center gap-2 text-xs sm:text-sm">
+              <span class="font-mono bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs">${optLetter}</span>
+              <span class="${listStyles}">${opt.substring(2)}</span>
+              ${stateTag}
+            </li>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Exam Reference Q${q.originalNumber} (${q.category})</span>
+            <div class="flex items-center gap-2">
+              ${isFlagged ? '<span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">FLAGGED</span>' : ''}
+              <span class="text-xs font-bold ${isCorrect ? 'text-emerald-600' : 'text-rose-500'}">
+                ${isCorrect ? 'Correct' : 'Incorrect / Missing'}
+              </span>
+            </div>
+          </div>
+          <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${q.question}</h4>
+          <ul class="space-y-2 border-t border-b border-slate-100 dark:border-slate-700 py-3">
+            ${optionsListStr}
+          </ul>
+          <div class="bg-indigo-50/40 dark:bg-indigo-950/15 p-4 rounded-xl text-xs text-slate-600 dark:text-slate-300 space-y-1">
+            <div class="font-bold text-indigo-700 dark:text-indigo-400">Answer Explanation:</div>
+            <p class="leading-relaxed">${q.explanation}</p>
+          </div>
+        `;
+        reviewList.appendChild(card);
+      });
+    }
+
+    function filterReview(type) {
+      renderReviewList(type);
+    }
+
+    // Navigation and state reset callbacks
+    function restartQuizWithSettings() {
+      startQuiz();
+    }
+
+    function resetToDashboard() {
+      if (timerInterval) clearInterval(timerInterval);
+      document.getElementById('setup-view').classList.remove('hidden');
+      document.getElementById('quiz-view').classList.add('hidden');
+      document.getElementById('result-view').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
